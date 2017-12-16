@@ -1,0 +1,132 @@
+import polynome as p
+import math
+
+def trigint(n2,n4, bx, by):
+   """
+   The horrible trigonometric integral... 
+   (comment to be written)
+   """
+   
+   if (n2+n4)%2 != 0:
+      return 0
+   
+   c = int(n2+n4)/2
+   alpha = by
+   beta = bx - by
+   
+   pfac = 2**(n4+1)*2*math.pi*complex(0,1)/bx**c
+   
+   
+   if beta > 0:
+      zre = math.sqrt(beta)/(math.sqrt(alpha+beta))
+      zimg = math.sqrt(alpha)/(math.sqrt(alpha+beta))
+   
+      z1 = complex(zre,zimg)
+      z2 = complex(-zre,-zimg)
+      z3 = complex(zre,-zimg)
+      z4 = complex(-zre,zimg)
+   elif beta < 0:
+      impm = math.sqrt(alpha) - math.sqrt(abs(beta))
+      impp = math.sqrt(alpha) + math.sqrt(abs(beta))
+      den = math.sqrt(alpha+beta)
+      z1 = complex(0,impm/den)
+      z2 = complex(0,impp/den)
+      z3 = complex(0,-impm/den)
+      z4 = complex(0,-impp/den)
+   else:
+      if n2 % 2 != 0 or n4 % 2 != 0:
+         return 0
+	 
+      rfac=1
+      tn4=1*n4
+      tn2=1*n2
+      for i in range(n4/2):
+         rfac = rfac*(1.0 + float(tn2+1)/(tn4-1))
+	 tn4 = tn4 - 2      
+
+      for i in range(n2/2):
+         rfac = rfac*(1.0 + float(tn4+1)/(tn2-1))
+	 tn2 = tn2 - 2
+	 
+      return 2*math.pi/rfac      
+
+  
+   idef = complex(0,1)
+   
+   den_i = (idef - z1)*(idef-z2)*(idef-z3)*(idef-z4)
+   res_i = 2**(n2-1)*idef**(n4-1)*den_i**(-c)
+   
+   if c == 0:
+      integ = pfac*res_i
+      if abs(integ.imag) < 1E-8:
+         return integ.real
+      else:
+         return integ
+	 
+   
+   cfac = math.factorial(c-1)**(-1)
+   
+   f1 = p.polynome([-1.0,0,1.0])
+   f2 = p.polynome([1.0,0.0])
+   f3 = p.polynome([1.0,0.0,1.0])
+   fz1 =p.polynome([1.0,-z1])
+   fz2 =p.polynome([1.0,-z2])
+   fz3 =p.polynome([1.0,-z3])
+   fz4 =p.polynome([1.0,-z4])
+   
+   
+   if beta >= 0:
+      pres_z1 = p.polynome_product([(f1,n2),(f2,n4),(f3,-1),(fz2,-c),(fz3,-c),(fz4,-c)])
+      pres_z4 = p.polynome_product([(f1,n2),(f2,n4),(f3,-1),(fz2,-c),(fz3,-c),(fz1,-c)])
+   
+      derz1 = pres_z1.nderive(c-1)
+      derz4 = pres_z4.nderive(c-1)
+      
+      res_z1 = cfac*derz1.eval(z1)
+      res_z4 = cfac*derz4.eval(z4)
+      
+      
+      integ = pfac*(res_i + res_z1 + res_z4)
+   else:
+      pres_z1 = p.polynome_product([(f1,n2),(f2,n4),(f3,-1),(fz2,-c),(fz3,-c),(fz4,-c)])
+      pres_z2 = p.polynome_product([(f1,n2),(f2,n4),(f3,-1),(fz4,-c),(fz3,-c),(fz1,-c)])
+   
+      derz1 = pres_z1.nderive(c-1)
+      derz2 = pres_z2.nderive(c-1)
+   
+      res_z1 = cfac*derz1.eval(z1)
+      res_z2 = cfac*derz2.eval(z2)
+   
+      integ = pfac*(res_i + res_z1 + res_z2)
+      
+   
+   if abs(integ.imag) < 1E-8:
+      return integ.real
+   else:
+      return integ
+   
+   
+
+def numint(n2,n4,bx,by, npoints=10000):
+   dx = 2*math.pi/(npoints-1)
+   
+   cm = (n2+n4)/2
+   integ=0
+   for i in range(npoints):
+      ct = dx*(i+0.5)
+      c = math.cos(ct)
+      s = math.sin(ct)
+      
+      num = math.pow(c,n2)*math.pow(s,n4)
+      den = (by + (bx-by)*c*c)**cm
+      
+      integ = integ + dx*num/den
+      
+   return integ
+      
+     
+
+
+
+#print trigint(4,0,1,1)
+#print numint(4,0,1,1,10000)

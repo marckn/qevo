@@ -1,0 +1,79 @@
+
+
+set pm3d map interpolate 3,3
+set size ratio 1
+set xrange[xmin:xmax]
+set yrange[ymin:ymax]
+unset key
+
+set palette defined ( 0.00 '#3206c3',\
+		      0.02 '#5a5303',\
+		      0.04 '#867b05',\
+		      0.06 '#ab9d06',\
+		      0.08 '#ab8103',\
+		      0.10 '#b67a01',\
+		      0.12 '#ab7737',\
+		      0.14 '#ab6d5e',\
+		      0.16 '#ab5e50',\
+		      0.18 '#ab4b4b',\
+		      0.20 '#ab3737',\
+                      0.25 '#24048c',\
+		      0.30 '#0a57aa',\
+		      0.35 '#0b7f99',\
+		      0.40 '#10b4d9',\
+		      0.42 '#01c6a9',\
+		      0.44 '#00c659',\
+		      0.46 '#00863c',\
+		      0.48 '#005425',\
+		      0.50 '#000000',\
+		      0.52 '#6a7000',\
+		      0.54 '#9aa200',\
+		      0.56 '#bec800',\
+		      0.58 '#c89104',\
+		      0.60 '#c26801',\
+		      0.65 '#a35608',\
+		      0.70 '#a32323',\
+		      0.75 '#c20303',\
+		      1.00 '#ff0505' )
+
+
+TMARGIN = "set tmargin at screen 0.90; set bmargin at screen 0.55"
+BMARGIN = "set tmargin at screen 0.52; set bmargin at screen 0.17"
+LMARGIN = "set lmargin at screen 0.12; set rmargin at screen 0.52"
+RMARGIN = "set lmargin at screen 0.50; set rmargin at screen 0.90"
+
+DMARGIN = "set lmargin at screen 0.27; set rmargin at screen 0.67"
+
+
+
+set term png size 400,400 enhanced font "Helvetica,8"
+set output fnout
+
+set multiplot layout 2,2 rowsfirst
+set cbrange[psimin:psimax]
+
+@TMARGIN; @LMARGIN
+set title "Re[Psi]"
+unset colorbox
+unset xlabel 
+set ylabel "Y"
+set xtics format " "
+spl filename us 1:2:($3*2)
+
+
+@TMARGIN; @RMARGIN
+set title "Img[Psi]"
+unset ylabel
+set colorbox
+set xtics format " "
+set ytics format " "
+spl filename us 1:2:($3*2)
+
+
+
+@BMARGIN;@DMARGIN 
+set title " |Psi|^2" offset 0,-15.5
+set cbrange[0:rhorange]
+set xlabel "X" offset 0,+0.6
+set xtics format "%.0f"
+spl filename us 1:2:(($3*$3+$4*$4)*10)

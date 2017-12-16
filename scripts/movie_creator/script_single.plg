@@ -1,0 +1,11 @@
+set pm3d map interpolate 3,3
+set size ratio 1
+set xrange[xmin:xmax]
+set yrange[ymin:ymax]
+set cbrange[zmin:zmax]
+set xlabel "X"
+set ylabel "Y"
+
+set term png size 400,400 enhanced
+set output fnout
+spl filename us 1:2:3
